@@ -98,7 +98,13 @@ will arrive by "two day shipping":
 -}
 
 twoBusinessDays :: Day -> Day
-twoBusinessDays d = undefined
+twoBusinessDays Monday = Wednesday
+twoBusinessDays Tuesday = Thursday
+twoBusinessDays Wednesday = Friday
+twoBusinessDays Thursday = Saturday
+twoBusinessDays Friday = Sunday
+twoBusinessDays Saturday = Monday
+twoBusinessDays Sunday = Tuesday
 
 {-
 Shapes
@@ -272,7 +278,7 @@ Rewrite this function using selectors `x` and `y`:
 -}
 
 distFromOrigin' :: Point -> Double
-distFromOrigin' p = undefined
+distFromOrigin' p = sqrt (x p * x p + y p * y p)
 
 {-
 Which version is easier to read? Opinions differ.
@@ -364,7 +370,8 @@ of `head` is not partial like the one for regular lists.)
 -- >>> safeHead oneTwoThree
 -- 1
 safeHead :: IntListNE -> Int
-safeHead = undefined
+safeHead (ISingle val) = val
+safeHead (ICons val _) = val
 
 {-
 We can define functions by recursion on `IntListNE`s too, of course. Write a function
@@ -374,7 +381,8 @@ to calculate the sum of a non-empty list of integers.
 -- >>> sumOfIntListNE oneTwoThree
 -- 6
 sumOfIntListNE :: IntListNE -> Int
-sumOfIntListNE = undefined
+sumOfIntListNE (ISingle val) = val
+sumOfIntListNE (ICons val tl) = val + sumOfIntListNE tl
 
 {-
 Polymorphic Datatypes
@@ -477,8 +485,13 @@ We can write simple functions on trees by recursion:
 -- | increment all integers in the tree
 -- >>> treePlus (Branch 2 Empty Empty) 3
 -- Branch 5 Empty Empty
+
+-- >>> treePlus exTree 3
+-- Branch 8 (Branch 5 (Branch 4 Empty Empty) (Branch 7 Empty Empty)) (Branch 12 Empty (Branch 10 Empty Empty))
+
 treePlus :: Tree Int -> Int -> Tree Int
-treePlus = undefined
+treePlus Empty _ = Empty
+treePlus (Branch x l r) k = Branch (x + k) (treePlus l k) (treePlus r k)
 
 {-
 We can accumulate all of the elements in a tree into a list:
@@ -498,7 +511,8 @@ infixOrder (Branch x l r) = infixOrder l ++ [x] ++ infixOrder r
 -- [5,2,1,4,9,7]
 
 prefixOrder :: Tree a -> [a]
-prefixOrder = undefined
+prefixOrder Empty = []
+prefixOrder (Branch x l r) = [x] ++ prefixOrder l ++ prefixOrder r
 
 {-
 (NOTE: This is a simple way of defining a tree walk in Haskell, but it is not
